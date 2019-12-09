@@ -15,13 +15,12 @@ def calculate(url):
         os.remove(url.rsplit('/', 1)[-1])
     except: pass
     filename = wget.download(url)
-
+    
     click.echo('\ndata processing:')
     with open(f'{filename}', 'r') as f:
         data = f.readlines()
     data = [json.loads(x) for x in data]
     data = sorted(data, key=lambda k: k['ts'])
-
     controls = [x for x in data if 'control_switch_on' in x.keys()]
     points = [x for x in data if 'control_switch_on' not in x.keys()]
     
@@ -44,7 +43,6 @@ def calculate(url):
         tmp_points.append([pts[x]['geo']['lat'], pts[x]['geo']['lon']])
         curpos = pts[x]['autopilot']
         nextpos = pts[x+1]['autopilot']
-
         # расчёт дистанции по точкам между изменениями позиции переключателя 
         if curpos != nextpos:
             for i in range(len(tmp_points)-1):
@@ -53,10 +51,8 @@ def calculate(url):
                     if curpos == True:
                         selfd += distance
                     else:
-                        humand += distance
-                        
+                        humand += distance 
             del tmp_points[:]
-        
         # для последней точки 
         elif x == len(pts)-1 and curpos == nextpos:
             tmp_points.append([pts[x+1]['geo']['lat'], pts[x+1]['geo']['lon']])
