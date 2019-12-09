@@ -10,13 +10,13 @@ import click
 @click.command()
 @click.option("--url", prompt="url", help="python3 ysc-distance.py --url='https://sdcimages.s3.yandex.net/test_task/data'")
 def calculate(url):
-    click.echo('downloading data')
+    click.echo('downloading:')
     try:
         os.remove(url.rsplit('/', 1)[-1])
     except: pass
     filename = wget.download(url)
 
-    click.echo('\nprocessing data')
+    click.echo('\ndata processing:')
     with open(f'{filename}', 'r') as f:
         data = f.readlines()
     data = [json.loads(x) for x in data]
@@ -36,7 +36,7 @@ def calculate(url):
     df_points = pd.DataFrame(points).dropna()
     pts = df_points.to_dict('records')
 
-    click.echo('calculating')
+    click.echo('distance calculation:')
     selfd = 0
     humand = 0
     tmp_points = []
