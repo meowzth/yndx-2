@@ -30,9 +30,9 @@ def calculate(url):
     for x in tqdm(range(len(points))):
         if points[x]['ts'] >= min(df_controls.ts.to_list()):
             if df_controls.loc[(df_controls['ts'] <= points[x]['ts']).idxmin(), 'control_switch_on'] == True:
-                points[x]['control'] = True
+                points[x]['autopilot'] = True
             else:
-                points[x]['control'] = False
+                points[x]['autopilot'] = False
     df_points = pd.DataFrame(points).dropna()
     pts = df_points.to_dict('records')
 
@@ -42,8 +42,8 @@ def calculate(url):
     tmp_points = []
     for x in tqdm(range(len(pts)-1)):
         tmp_points.append([pts[x]['geo']['lat'], pts[x]['geo']['lon']])
-        curpos = pts[x]['control']
-        nextpos = pts[x+1]['control']
+        curpos = pts[x]['autopilot']
+        nextpos = pts[x+1]['autopilot']
 
         # расчёт дистанции по точкам между изменениями позиции переключателя 
         if curpos != nextpos:
@@ -51,9 +51,10 @@ def calculate(url):
                 if 0 not in tmp_points[i] and 0 not in tmp_points[i+1]:
                     distance = geodesic(tmp_points[i], tmp_points[i+1]).m
                     if curpos == True:
-                        humand += distance
-                    else:
                         selfd += distance
+                    else:
+                        humand += distance
+                        
             del tmp_points[:]
         
         # для последней точки 
@@ -63,9 +64,9 @@ def calculate(url):
                 if 0 not in tmp_points[i] and 0 not in tmp_points[i+1]:
                     distance = geodesic(tmp_points[i], tmp_points[i+1]).m
                     if curpos == True:
-                        humand += distance
-                    else:
                         selfd += distance
+                    else:
+                        humand += distance
             del tmp_points[:]
     
     click.echo(f'selfdriving: {selfd} m')
